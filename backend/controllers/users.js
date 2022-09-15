@@ -1,4 +1,5 @@
 import { getUserById, hasUserByEmail, getUserByEmail, insertUser } from "../models/userModel.js";
+import bcrypt from "bcrypt";
 
 export const showUserById = (req, res) => {
   getUserById(req.params.id, (err, results) => {
@@ -36,19 +37,22 @@ export const loginUser = (req, res) => {
         res.send(uerr);
         return;
       }
-      if(password != uresults.password){
-        res.json({ hasUser: true, rPass: false });
-        return;
-      }
-      res.json({ hasUser: true, rPass: true, user: uresults })
+      bcrypt.compare(password, uresults.password, function (err, result) {
+        if (!result) {
+          res.json({ hasUser: true, rPass: false });
+          return
+        }
+        res.json({ hasUser: true, rPass: true, user: uresults })
+      });
     })
   });
 }
 export const createUser = (req, res) => {
   const { email, password } = req.body;
+  const hashPassword = bcrypt.hashSync(password, 7);
   const data = {
     email: email,
-    password: password,
+    password: hashPassword,
   }
   insertUser(data, (err, results) => {
     if (err) {
