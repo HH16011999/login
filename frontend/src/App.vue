@@ -56,4 +56,7 @@ h6 {
 p {
   margin: 0;
 }
+.errors{
+  color: red;
+}
 </style>
