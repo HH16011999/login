@@ -17,6 +17,7 @@
     "vue": "^3.2.13",
     "vue-cookies": "^1.8.1",
     "vue-router": "^4.0.16",
+    "connect-history-api-fallback": "^1.6.0",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

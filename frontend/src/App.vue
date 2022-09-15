@@ -1,20 +1,23 @@
 <template>
 <div>
-  <nav>
-  
-  </nav>
-  <LoginComponent v-if="!$cookies.get('userInfo')" />
+  <nav-component />
+  <login-component v-if="!$cookies.get('userInfo')" />
+  <card-component v-else />
 </div>
 </template>
 
 <script>
-import LoginComponent from './components/LoginComponent'
+import LoginComponent from '@/components/LoginComponent'
+import NavComponent from '@/components/NavComponent';
+import CardComponent from './components/CardComponent';
 
 export default {
   name: 'App',
   components: {
-    LoginComponent
-  }
+    LoginComponent,
+    NavComponent,
+    CardComponent,
+}
 }
 </script>
 

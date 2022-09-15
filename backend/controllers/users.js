@@ -1,5 +1,4 @@
-import { getUserById, hasUserByEmail,
-  getUserByEmail } from "../models/userModel.js";
+import { getUserById, hasUserByEmail, getUserByEmail } from "../models/userModel.js";
 
 export const showUserById = (req, res) => {
   getUserById(req.params.id, (err, results) => {
