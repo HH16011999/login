@@ -1,16 +1,18 @@
 <template>
 <div class="login-form">
   <div class="lock-icon">
-    <font-awesome-icon :icon="['fas', 'lock']" class="icon alt" />
+    <font-awesome-icon :icon="['fas', login?'lock':'plus']" class="icon alt" />
   </div>
-  <h1>Sign in</h1>
+  <h1>Sign {{login?'in':'up'}}</h1>
   <div class="form">
     <input type="email" v-model="email" placeholder="Email Address *">
     <input type="password" v-model="password" placeholder="Password *">
+    <input v-if="!login" type="password" v-model="repassword" placeholder="RePassword *">
     <ul class="errors" v-if="errors">
       <li v-for="(error, index) in errors" :key="index">{{error}}</li>
     </ul>
-    <div @click="userlogin" class="sign-in">Sign in</div>
+    <div @click="submit" class="sign-in">Sign {{login?'in':'up'}}</div>
+    <p class="signup" @click="() => {reset(); login = !login}">Sign {{!login?'in':'up'}}</p>
   </div>
 </div>
 </template>
@@ -24,7 +26,9 @@ export default {
     return {
       email: '',
       password: '',
+      repassword: '',
       errors: [],
+      login: true
     }
   },
   methods: {
@@ -32,21 +36,34 @@ export default {
     reset() {
       this.email = '';
       this.password = '';
+      this.repassword = '';
       this.errors = [];
     },
-    async userlogin() {
+    submit() {
+      this.errors = [];
+      if (!this.email) {
+        this.errors.push('Enter Email address.')
+      }
+      if (this.email && !this.validateEmail(this.email)) {
+        this.errors.push('Enter correct Email address.')
+      }
+      if (!this.password) {
+        this.errors.push('Enter password.')
+      }
+      if (!this.login && !this.repassword) {
+        this.errors.push('Enter password again.')
+      }
+      if (!this.login && this.password != this.repassword) {
+        this.errors.push('Passwords are different.')
+      }
+      if (this.errors.length > 0) return;
+
+      if (this.login) this.userLogin()
+      else this.userRegister()
+
+    },
+    async userLogin() {
       try {
-        this.errors = [];
-        if (!this.email) {
-          this.errors.push('Enter Email address.')
-        }
-        if (this.email && !this.validateEmail(this.email)) {
-          this.errors.push('Enter correct Email address.')
-        }
-        if (!this.password) {
-          this.errors.push('Enter password.')
-        }
-        if (this.errors.length > 0) return;
         const response = await axios.post(`http://${window.location.hostname}:5000/login`, {
           email: this.email,
           password: this.password,
@@ -62,8 +79,32 @@ export default {
         var udata = response.data.user;
         udata.password = ''
         this.$cookies.set("userInfo", udata);
-        this.reset();
-        this.$router.go();
+      this.reset();
+      this.$router.go();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async userRegister() {
+      try {
+        if (this.email) {
+          const response = await axios.get(
+            `http://${window.location.hostname}:5000/userbyemail`, {
+              params: {
+                email: this.email
+              }
+            }
+          );
+          if (Object.values(response.data)[0] == 1)
+            this.errors.push('Email address used.')
+        }
+        if (this.errors.length > 0) return;
+        await axios.post(`http://${window.location.hostname}:5000/user`, {
+          email: this.email,
+          password: this.password,
+        });
+      this.reset();
+      this.$router.go();
       } catch (err) {
         console.log(err);
       }
@@ -120,7 +161,6 @@ export default {
 
 .form input {
   border: 1px solid #999;
-
 }
 
 .form .sign-in {
@@ -130,5 +170,14 @@ export default {
   color: #eee;
   padding-block: .7em;
   cursor: pointer;
+}
+
+.form p.signup {
+  text-align: center;
+  cursor: pointer;
+}
+
+.form p.signup:hover {
+  text-decoration: underline;
 }
 </style>

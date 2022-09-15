@@ -17,7 +17,7 @@ export default {
     LoginComponent,
     NavComponent,
     CardComponent,
-}
+  }
 }
 </script>
 

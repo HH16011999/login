@@ -1,4 +1,4 @@
-import { getUserById, hasUserByEmail, getUserByEmail } from "../models/userModel.js";
+import { getUserById, hasUserByEmail, getUserByEmail, insertUser } from "../models/userModel.js";
 
 export const showUserById = (req, res) => {
   getUserById(req.params.id, (err, results) => {
@@ -42,5 +42,19 @@ export const loginUser = (req, res) => {
       }
       res.json({ hasUser: true, rPass: true, user: uresults })
     })
+  });
+}
+export const createUser = (req, res) => {
+  const { email, password } = req.body;
+  const data = {
+    email: email,
+    password: password,
+  }
+  insertUser(data, (err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
   });
 }

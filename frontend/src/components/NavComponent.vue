@@ -41,7 +41,4 @@
     color: yellow;
     cursor: pointer;
   }
-  @media screen and (max-width: 850px){
-    
-  }
 </style>

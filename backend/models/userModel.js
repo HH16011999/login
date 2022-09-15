@@ -32,3 +32,14 @@ export const hasUserByEmail = (email, result) => {
     result(null, results[0]);
   });
 }
+
+export const insertUser = (data, result) => {
+  db.query("INSERT INTO users SET ?", [data], (err, results) => {
+    if (err) {
+      console.log(err);
+      result(err, null);
+    } else {
+      result(null, results);
+    }
+  });
+}
